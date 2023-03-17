@@ -1,3 +1,4 @@
+// https://zetcode.com/gui/gtk2/gtkevents/
 #include <gtk/gtk.h>
 
 void configure_callback(GtkWindow *window, 
