@@ -1,2 +1,2 @@
 %: %.c
-	gcc `pkg-config --cflags --libs gtk+-3.0` -o $@ $<
+	gcc -g `pkg-config --cflags --libs gtk+-3.0` -o $@ $<
