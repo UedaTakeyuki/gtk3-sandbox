@@ -39,14 +39,14 @@ static const gchar menu_info[] =
   "        <item>"
   "          <attribute name='label'>Open</attribute>"
   "          <attribute name='action'>app.open</attribute>"
-  "          <attribute name='accel'><Primary>o</attribute>"
+  "          <attribute name='accel'>&lt;Primary&gt;o</attribute>"
   "        </item>"
   "      </section>"
   "      <section>"
   "        <item>"
   "          <attribute name='label'>Quit</attribute>"
   "          <attribute name='action'>app.quit</attribute>"
-  "          <attribute name='accel'><Primary>q</attribute>"
+  "          <attribute name='accel'>&lt;Primary&gt;q</attribute>"
   "        </item>"
   "      </section>"
   "    </submenu>"
@@ -80,6 +80,7 @@ static void cb_activate (GApplication *app, gpointer user_data){
   menubar = (GMenuModel *) gtk_builder_get_object(builder, "appmenu");
 //  gtk_application_set_app_menu(GTK_APPLICATION(app), menubar);
   gtk_application_set_menubar (GTK_APPLICATION(app), menubar);
+
   {
 //    GtkWidget *vbox;
     GtkWidget *image;
@@ -87,8 +88,6 @@ static void cb_activate (GApplication *app, gpointer user_data){
     GtkWidget *scroll_window;
 
     // create box
-/*    vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
-    gtk_container_add(GTK_CONTAINER(window), vbox);*/
 
     // create scrolled widow
     scroll_window = gtk_scrolled_window_new(NULL, NULL);
@@ -102,10 +101,6 @@ static void cb_activate (GApplication *app, gpointer user_data){
     gtk_container_add (GTK_CONTAINER(scroll_window), image);
 
     // create button
-/*    button = gtk_button_new_with_label("Quit");
-    gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 0);
-    g_signal_connect(button, "clicked", 
-                    G_CALLBACK (cb_button_clicked), NULL);*/
   }
 
   gtk_widget_show_all(window);
