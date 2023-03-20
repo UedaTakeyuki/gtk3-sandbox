@@ -6,7 +6,47 @@
 static void cb_open (GSimpleAction *action,
                      GVariant  *parameter,
                      gpointer  user_data){
-  g_print ("This function is not implemented yet .\n");
+  GtkApplication *app;
+  GtkWindow *window;
+  GtkWidget *dialog;
+  gint response;
+
+  // get the Application window
+  app = GTK_APPLICATION (user_data);
+  window = gtk_application_get_active_window(app);
+
+  // create file chooser dialog
+  dialog = gtk_file_chooser_dialog_new ("Open an image",
+                                        GTK_WINDOW(window),
+                                        GTK_FILE_CHOOSER_ACTION_OPEN,
+                                        "_Cancel",
+                                        GTK_RESPONSE_CANCEL,
+                                        "_OPEN",
+                                        GTK_RESPONSE_ACCEPT,
+                                        NULL);
+
+  // show dialog
+  gtk_widget_show_all (dialog);
+
+  // set selected file as image file
+  response = gtk_dialog_run (GTK_DIALOG(dialog));
+  if (response == GTK_RESPONSE_ACCEPT){
+    gchar *filename;
+    GtkWidget *image;
+
+    // get file name
+    filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+
+    // read image from file and set image widget
+    image = GTK_WIDGET(g_object_get_data(G_OBJECT(window), "image"));
+    gtk_image_set_from_file(GTK_IMAGE(image), filename);
+
+    // free filename gchar
+    g_free(filename);
+  }
+
+  // destroy dialog
+  gtk_widget_destroy(dialog);
 }
 
 // callback for menu item "quit"
@@ -71,7 +111,6 @@ static void cb_activate (GApplication *app, gpointer user_data){
 
   // create menu
   GtkBuilder *builder;
-//  gtk_builder_add_from_string (builder, menu_info, -1, NULL);
   builder = gtk_builder_new();
   gtk_builder_add_from_string (builder, 
                                menu_info,
@@ -82,12 +121,9 @@ static void cb_activate (GApplication *app, gpointer user_data){
   gtk_application_set_menubar (GTK_APPLICATION(app), menubar);
 
   {
-//    GtkWidget *vbox;
     GtkWidget *image;
     GtkWidget *button;
     GtkWidget *scroll_window;
-
-    // create box
 
     // create scrolled widow
     scroll_window = gtk_scrolled_window_new(NULL, NULL);
@@ -97,10 +133,9 @@ static void cb_activate (GApplication *app, gpointer user_data){
                                     GTK_POLICY_AUTOMATIC);
 
     // create image
-    image = gtk_image_new_from_file((char *) user_data);
+    image = gtk_image_new();
+    g_object_set_data(G_OBJECT(window), "image", (gpointer) image);
     gtk_container_add (GTK_CONTAINER(scroll_window), image);
-
-    // create button
   }
 
   gtk_widget_show_all(window);
@@ -109,12 +144,6 @@ static void cb_activate (GApplication *app, gpointer user_data){
 int main(int argc, char *argv[]){
 //  GtkWidget *window;
   GtkApplication *app;
-
-  // check commandline params
-  if (argc != 2){
-    g_print("Usage: %s image-file\n", argv[0]);
-    exit(1);
-  }
 
   // create app
   app = gtk_application_new("test.gtk.imageviewer", 0);
