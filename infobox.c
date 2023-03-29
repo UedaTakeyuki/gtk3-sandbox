@@ -10,10 +10,21 @@ activate (GtkApplication *app,
 
   window = gtk_application_window_new (app);
   gtk_window_set_title (GTK_WINDOW (window), "Window");
-  gtk_window_set_default_size (GTK_WINDOW (window), 100, 20);
+  gtk_window_set_default_size (GTK_WINDOW (window), 600, 80);
 
+  // create label
   label = gtk_label_new ("aho");
+//  gtk_widget_set_size_request (label, 600, 80);
   gtk_container_add (GTK_CONTAINER (window), label);
+  gtk_label_set_xalign (GTK_LABEL(label), 0.0);
+
+  // set font size of label
+  PangoAttrList* al = pango_attr_list_new ();
+  PangoAttribute *attr = pango_attr_size_new_absolute(80 * PANGO_SCALE);
+  pango_attr_list_insert(al, attr);
+  gtk_label_set_attributes (GTK_LABEL(label), al);
+  pango_attr_list_unref(al);
+
 
   gtk_widget_show_all (window);
 }
