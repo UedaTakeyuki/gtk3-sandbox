@@ -18,11 +18,6 @@ activate (GtkApplication *app,
   gtk_widget_show_all (window);
 }
 
-static gboolean change_label_string(gpointer user_data){
-  gtk_label_set_text (GTK_LABEL(label), "kerokero");    
-  return FALSE;
-}
-
 gboolean my_callback(GIOChannel *source, GIOCondition condition, gpointer data){
   gchar *buf=NULL;
   GError *error = NULL;
@@ -32,8 +27,10 @@ gboolean my_callback(GIOChannel *source, GIOCondition condition, gpointer data){
       fprintf(stderr, "read failed.\n");
       return FALSE;
   }
-//  gtk_label_set_text (GTK_LABEL(label), buf); 
+  g_print(buf);
+  gtk_label_set_text (GTK_LABEL(label), buf); 
   g_free(buf);
+  g_io_add_watch(source, G_IO_IN,(GIOFunc) my_callback, NULL);  // ここで設定し直さないと一度しか呼んでくれないっぽい。
 /*
   switch (condition){
     case G_IO_IN:
@@ -48,7 +45,7 @@ gboolean my_callback(GIOChannel *source, GIOCondition condition, gpointer data){
         g_print(error->message);
       }
   }*/
-  return TRUE;
+  return FALSE;
 }
 
 int
@@ -67,10 +64,11 @@ main (int    argc,
   // https://gist.github.com/bert/717238/379607561e216a7eca24e4bd7759b9c0dcb94096#file-io-c
 //  fd = fileno(stdin); 
 //  channel = g_io_channel_unix_new(fd);             // wrap stdout with GIOChannel
-  channel = g_io_channel_unix_new(0);             // wrap stdout with GIOChannel
+  channel = g_io_channel_new_file ("info", "r", NULL);
+//  channel = g_io_channel_unix_new(fd);             // wrap stdout with GIOChannel
 //  g_io_channel_set_encoding(channel, NULL, NULL);  // accept binary, allow no buffering
 //  g_io_channel_set_buffered(channel, FALSE);       // don't buffer
-  g_timeout_add(1000, g_io_add_watch(channel, G_IO_IN,(GIOFunc) my_callback, NULL), NULL);
+  g_io_add_watch(channel, G_IO_IN,(GIOFunc) my_callback, NULL);
 
   status = g_application_run (G_APPLICATION (app), argc, argv);
   g_object_unref (app);
