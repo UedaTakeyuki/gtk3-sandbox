@@ -38,9 +38,15 @@ void* thread_function(void *data){
     if (buf != NULL){
       gtk_label_set_text (GTK_LABEL(label), buf);
       g_print("buf: %s\n",buf);
+      g_free(buf);
+    } else {
+      g_print("NULL: \n");
     }
-    g_free(buf);
-    g_usleep(200000);
+    // close and create new
+    g_io_channel_shutdown(channel, TRUE, NULL);
+    g_io_channel_unref(channel);
+    GIOChannel *channel = g_io_channel_new_file ("info", "r", NULL);    
+//    g_usleep(200000);
   }
 }
 
@@ -53,6 +59,9 @@ gboolean my_callback(GIOChannel *source, GIOCondition condition, gpointer data){
     gtk_label_set_text (GTK_LABEL(label), buf);
     g_print("buf: %s\n",buf);
     g_free(buf);
+
+    g_io_channel_shutdown(source, TRUE, NULL);
+    g_io_channel_unref(source);
     GIOChannel *channel;
     channel = g_io_channel_new_file ("info", "r", NULL);
     g_io_add_watch(channel, G_IO_IN | G_IO_HUP,(GIOFunc) my_callback, NULL);
